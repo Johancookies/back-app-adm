@@ -1,6 +1,6 @@
 from fastapi import FastAPI, HTTPException
 from sqlalchemy import create_engine, Column, Integer, String, Text, Boolean, ForeignKey
-from sqlalchemy.orm import relationship, sessionmaker
+from sqlalchemy.orm import relationship, sessionmaker, joinedload  # Importa joinedload
 from sqlalchemy.ext.declarative import declarative_base
 from typing import List, Optional
 from dotenv import load_dotenv
@@ -112,13 +112,15 @@ async def create_onboarding(onboarding: OnboardingCreate):
 @app.get("/onboardings/{onboarding_id}")
 async def get_onboarding(onboarding_id: int):
     db = SessionLocal()
-    onboarding = db.query(Onboarding).filter(Onboarding.id == onboarding_id).first()
+    # Usamos joinedload para cargar las questions con el onboarding
+    onboarding = db.query(Onboarding).options(joinedload(Onboarding.questions)).filter(Onboarding.id == onboarding_id).first()
 
     if not onboarding:
+        db.close()
         raise HTTPException(status_code=404, detail="Onboarding not found")
 
-    #  Las questions se cargan automáticamente gracias a la relación
-    return onboarding  # FastAPI convertirá esto a JSON automáticamente
+    db.close()  # Cerramos la sesión después de cargar los datos
+    return onboarding   
 
 
 # Endpoint para crear una nueva opción de pregunta
@@ -167,17 +169,18 @@ async def get_question_with_options(question_id: int):
     #  Las options se cargan automáticamente gracias a la relación
     db.close()
     return question
-
-# Nuevo Endpoint: Obtener un Onboarding con sus Preguntas
-@app.get("/onboardings/{onboarding_id}/questions")
-async def get_onboarding_with_questions(onboarding_id: int):
+# custom
+@app.get("/onboardings/{onboarding_id}/questions/v2")
+async def get_onboarding_with_questions_v2(onboarding_id: int):
     db = SessionLocal()
-    onboarding = db.query(Onboarding).filter(Onboarding.id == onboarding_id).first()
+    # Usamos joinedload para cargar las questions con el onboarding
+    onboarding = db.query(Onboarding).options(joinedload(Onboarding.questions)).filter(Onboarding.id == onboarding_id).first()
+    # question = db.query(Question).filter(Question.onboarding_id == onboarding_id).all()
+    # print(question)
 
     if not onboarding:
         db.close()
         raise HTTPException(status_code=404, detail="Onboarding not found")
 
-    #  SQLAlchemy ya cargó las questions relacionadas gracias a la relationship
-    #  No cierres la sesión aquí
+    db.close()  # Cerramos la sesión después de cargar los datos
     return onboarding
