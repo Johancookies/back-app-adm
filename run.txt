@@ -1,0 +1,14 @@
+- add venv:
+    python3 -m venv venv
+
+- activate venv:
+    source venv/bin/activate
+
+- upgrade/intall dependencies:
+    pip install --upgrade pip && pip install -r requirements.txt
+
+- run project
+    uvicorn app.main:app --reload
+
+- update file
+    pip freeze > requirements.txt 
