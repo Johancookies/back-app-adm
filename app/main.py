@@ -71,6 +71,17 @@ class QuestionOption(Base):
 #  Crear las tablas en la base de datos (Ejecutar solo una vez o cuando haya cambios en los modelos)
 Base.metadata.create_all(bind=engine)
 
+class OnboardingCreate(BaseModel):
+    name: str
+    status: bool
+    title: str
+    description: str
+    activation_type_id: int
+    color_config: str
+    allow_text_color_change: bool
+    allow_popups: bool
+    target_user_type_id: int
+
 #  Modelos Pydantic para la validación de datos
 class QuestionOptionCreate(BaseModel):
     name: str
@@ -83,8 +94,19 @@ class QuestionCreate(BaseModel):
     title: str
     description: Optional[str] = None
     type: str
+    status: bool
     onboarding_id: Optional[int] = None  #  Agregamos onboarding_id
 
+# Endpoint para crear un nuevo Onboarding
+@app.post("/onboardings/")
+async def create_onboarding(onboarding: OnboardingCreate):
+    db = SessionLocal()
+    db_onboarding = Onboarding(**onboarding.model_dump())
+    db.add(db_onboarding)
+    db.commit()
+    db.refresh(db_onboarding)
+    db.close()
+    return db_onboarding
 
 # Endpoint para obtener un Onboarding por ID
 @app.get("/onboardings/{onboarding_id}")
@@ -96,7 +118,6 @@ async def get_onboarding(onboarding_id: int):
         raise HTTPException(status_code=404, detail="Onboarding not found")
 
     #  Las questions se cargan automáticamente gracias a la relación
-    db.close()
     return onboarding  # FastAPI convertirá esto a JSON automáticamente
 
 
@@ -146,3 +167,17 @@ async def get_question_with_options(question_id: int):
     #  Las options se cargan automáticamente gracias a la relación
     db.close()
     return question
+
+# Nuevo Endpoint: Obtener un Onboarding con sus Preguntas
+@app.get("/onboardings/{onboarding_id}/questions")
+async def get_onboarding_with_questions(onboarding_id: int):
+    db = SessionLocal()
+    onboarding = db.query(Onboarding).filter(Onboarding.id == onboarding_id).first()
+
+    if not onboarding:
+        db.close()
+        raise HTTPException(status_code=404, detail="Onboarding not found")
+
+    #  SQLAlchemy ya cargó las questions relacionadas gracias a la relationship
+    #  No cierres la sesión aquí
+    return onboarding
