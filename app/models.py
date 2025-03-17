@@ -3,7 +3,7 @@ from sqlalchemy.ext.declarative import declarative_base
 
 Base = declarative_base()
 
-class OnboardingUser(Base):
+class OnboardingUsers(Base):
     __tablename__ = "onboarding_users"
 
     id = Column(Integer, primary_key=True, index=True, autoincrement=True)
@@ -16,5 +16,7 @@ class OnboardingUser(Base):
     city = Column(String(100))
     document_type = Column(String(50))
     document_number = Column(String(50))
+    metadata = Column(JSON) 
+    status = Column(Integer, default=1)
     created_at = Column(TIMESTAMP, server_default=func.now())
     updated_at = Column(TIMESTAMP, server_default=func.now(), onupdate=func.now())

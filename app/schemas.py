@@ -1,16 +1,23 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, EmailStr
+from datetime import date
+from typing import Optional
 
-class User(BaseModel):
-    id: int
-    email: str
+class UserBase(BaseModel):
+    email: EmailStr
     first_name: str
     last_name: str
-    bith_date: str = None
-    phone: str = None
-    country: str = None
-    city: str = None
-    document_type: str = None
-    document_number: str = None
+    birth_date: Optional[date] = None
+    phone: Optional[str] = None
+    country: Optional[str] = None
+    city: Optional[str] = None
+    document_type: Optional[str] = None
+    document_number: Optional[str] = None
+
+class UserCreate(UserBase):
+    pass
+
+class User(UserBase):
+    id: int
 
     class Config:
         orm_mode = True
