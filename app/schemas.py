@@ -12,7 +12,7 @@ class UserBase(BaseModel):
     city: Optional[str] = None
     document_type: Optional[str] = None
     document_number: Optional[str] = None
-    status: int
+    status: Optional[int] = 1
 
 class UserCreate(UserBase):
     pass
