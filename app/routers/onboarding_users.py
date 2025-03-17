@@ -50,7 +50,7 @@ def update_user(user_id: int, user: schemas.UserCreate, db: Session = Depends(ge
         db.refresh(db_user)
         return schemas.Response(success=True, data=schemas.User.model_validate(db_user)) 
     except HTTPException as e:
-        raise e
+        raise HTTPException(status_code=500, detail=str(e))
     except Exception as e:
         db.rollback()
         raise HTTPException(status_code=500, detail=str(e))
@@ -61,11 +61,11 @@ def delete_user(user_id: int, db: Session = Depends(get_db)):
         db_user = db.query(models.OnboardingUsers).filter(models.OnboardingUsers.id == user_id).first()
         if db_user is None:
             raise HTTPException(status_code=404, detail="User not found")
-        db.delete(db_user)
+        setattr(db_user, models.OnboardingUsers.status, 0)
         db.commit()
         return schemas.Response(success=True, data={"message": "User deleted"})
     except HTTPException as e:
-        raise e
+        raise HTTPException(status_code=500, detail=str(e))
     except Exception as e:
         db.rollback()
         raise HTTPException(status_code=500, detail=str(e))
