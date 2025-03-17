@@ -4,7 +4,7 @@ CREATE TABLE onboardings (
     status INT DEFAULT 1,
     title VARCHAR(255) NOT NULL,
     description TEXT NOT NULL,
-    metadata JSON,
+    x_metadata JSON,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 );
@@ -15,7 +15,7 @@ CREATE TABLE onboarding_questions (
     description TEXT NOT NULL,
     type VARCHAR(50),
     onboarding_id INT NOT NULL,
-    metadata JSON,
+    x_metadata JSON,
     status INT DEFAULT 1,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
@@ -28,7 +28,7 @@ CREATE TABLE onboarding_options (
     description TEXT NOT NULL,
     status INT DEFAULT 1,
     question_id INT NOT NULL,
-    metadata JSON,
+    x_metadata JSON,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     FOREIGN KEY (question_id) REFERENCES onboarding_questions(id)
@@ -45,7 +45,7 @@ CREATE TABLE onboarding_users (
     city VARCHAR(100) NOT NULL,
     document_type VARCHAR(50) NOT NULL,
     document_number VARCHAR(50) NOT NULL,
-    metadata JSON,
+    x_metadata JSON,
     status INT DEFAULT 1,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
@@ -58,7 +58,7 @@ CREATE TABLE onboarding_answers (
     question_id INT NOT NULL,
     option_id INT,
     answer_text TEXT NOT NULL,
-    metadata JSON,
+    x_metadata JSON,
     status INT DEFAULT 1,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
@@ -80,7 +80,7 @@ CREATE TABLE onboarding_transactions (
     gateway_response TEXT NOT NULL,
     tokenization_id INT NOT NULL,
     tokenization_source VARCHAR(100) NOT NULL,
-    metadata JSON,
+    x_metadata JSON,
     status INT DEFAULT 1,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,

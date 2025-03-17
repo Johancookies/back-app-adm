@@ -16,7 +16,7 @@ class OnboardingUsers(Base):
     city = Column(String(100))
     document_type = Column(String(50))
     document_number = Column(String(50))
-    metadata = Column(JSON) 
+    x_metadata = Column(JSON) 
     status = Column(Integer, default=1)
     created_at = Column(TIMESTAMP, server_default=func.now())
     updated_at = Column(TIMESTAMP, server_default=func.now(), onupdate=func.now())
