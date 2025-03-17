@@ -12,3 +12,7 @@
 
 - update file
     pip freeze > requirements.txt 
+
+- delete cache
+    find . -name "*.pyc" -delete
+    find . -name "__pycache__" -type d -delete

@@ -69,3 +69,33 @@ def delete_user(user_id: int, db: Session = Depends(get_db)):
     except Exception as e:
         db.rollback()
         raise HTTPException(status_code=500, detail=str(e))
+    
+    
+@router.post("/process", response_model=schemas.Response)
+def create_user_with_answers(request: schemas.UserCreateWithAnswers, db: Session = Depends(get_db)):
+    try:
+        # 1. Creating user
+        payload = request.model_dump()
+        db_user = models.OnboardingUsers(**payload["user"])
+        db.add(db_user)
+        db.commit()
+        db.refresh(db_user)
+
+          # 2. Creating user
+        for answer in payload["answers"]:
+            db_answer = models.OnboardingAnswers(
+                user_id=db_user.id,
+                onboarding_id=answer["question_id"],
+                question_id=answer["question_id"],
+                option_id=answer["option_id"],
+                answer_text=answer["answer_text"],
+                x_metadata=answer["x_metadata"]
+            )
+            db.add(db_answer)
+
+        db.commit()
+        return schemas.Response(success=True, data="OK")
+    
+    except Exception as e:
+        db.rollback()
+        raise HTTPException(status_code=500, detail=str(e))

@@ -1,6 +1,6 @@
 from pydantic import BaseModel
 from datetime import date
-from typing import Optional, Any
+from typing import Optional, Any, List
 
 class Response(BaseModel):
     success: bool
@@ -28,3 +28,17 @@ class UserCreate(UserBase):
 
 class User(UserBase):
     id: int
+
+# * process fix later
+
+class AnswerCreate(BaseModel):
+    onboarding_id: int
+    question_id: int
+    option_id: Optional[int] = None 
+    answer_text: str
+    x_metadata: Optional[dict] = None  
+
+class UserCreateWithAnswers(BaseModel):
+    user: UserCreate
+    answers: List[AnswerCreate]
+
