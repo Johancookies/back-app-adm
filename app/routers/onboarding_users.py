@@ -8,11 +8,11 @@ router = APIRouter()
 @router.post("/users/", response_model=schemas.Response)
 def create_user(user: schemas.UserCreate, db: Session = Depends(get_db)):
     try:
-        db_user = models.OnboardingUsers(**user.dict())
+        db_user = models.OnboardingUsers(**user.model_dump())
         db.add(db_user)
         db.commit()
         db.refresh(db_user)
-        return schemas.Response(success=True, data=schemas.User.model_validate(db_user))  # Convert to User schema
+        return schemas.Response(success=True, data=schemas.User.model_validate(db_user))
     except Exception as e:
         db.rollback()
         raise HTTPException(status_code=500, detail=str(e))
@@ -43,7 +43,7 @@ def update_user(user_id: int, user: schemas.UserCreate, db: Session = Depends(ge
         db_user = db.query(models.OnboardingUsers).filter(models.OnboardingUsers.id == user_id).first()
         if db_user is None:
             raise HTTPException(status_code=404, detail="User not found")
-        for key, value in user.dict(exclude_unset=True).items():
+        for key, value in user.model_dump(exclude_unset=True).items():
             setattr(db_user, key, value)
         db.add(db_user)
         db.commit()
