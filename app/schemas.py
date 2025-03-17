@@ -1,6 +1,11 @@
 from pydantic import BaseModel
 from datetime import date
-from typing import Optional
+from typing import Optional, Any
+
+class Response(BaseModel):
+    success: bool
+    data: Optional[Any] = None
+    error: Optional[str] = None
 
 class UserBase(BaseModel):
     email: str
@@ -14,11 +19,12 @@ class UserBase(BaseModel):
     document_number: Optional[str] = None
     status: Optional[int] = 1
 
+    model_config = {
+        "from_attributes": True
+    }
+
 class UserCreate(UserBase):
     pass
 
 class User(UserBase):
     id: int
-
-    class Config:
-        orm_mode = True
